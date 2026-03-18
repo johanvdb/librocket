@@ -1,0 +1,42 @@
+From: Johan van der Berg <johan@example.com>
+Date: Tue, 18 Mar 2026 10:00:00 +0000
+Subject: [PATCH] drm/rocket: Fix NULL pointer dereference in IOMMU domain cleanup
+
+The rocket_job_cleanup() function calls rocket_iommu_domain_put() without
+checking if job->domain is NULL. This causes a kernel crash when
+rocket_iommu_domain_get() returns NULL during job submission.
+
+Add NULL check in rocket_job_cleanup() to prevent dereferencing a NULL
+pointer during cleanup.
+
+Crash trace:
+  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+  pc : rocket_iommu_domain_put+0x20/0xa8 [rocket]
+  lr : rocket_job_cleanup+0x20/0x254 [rocket]
+  Call trace:
+   rocket_iommu_domain_put+0x20/0xa8 [rocket]
+   rocket_job_cleanup+0x20/0x254 [rocket]
+   rocket_ioctl_submit+0x394/0x744 [rocket]
+
+Signed-off-by: Johan van der Berg <johan@example.com>
+---
+ drivers/accel/rocket/rocket_job.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/rocket_job.c
+index ac51bff39833..123456789abc 100644
+--- a/drivers/accel/rocket/rocket_job.c
++++ b/drivers/accel/rocket/rocket_job.c
+@@ -280,7 +280,8 @@ static void rocket_job_cleanup(struct kref *ref)
+ 						refcount);
+ 	unsigned int i;
+ 
+-	rocket_iommu_domain_put(job->domain);
++	if (job->domain)
++		rocket_iommu_domain_put(job->domain);
+ 
+ 	dma_fence_put(job->done_fence);
+ 	dma_fence_put(job->inference_done_fence);
+-- 
+2.34.1
+

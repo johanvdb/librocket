@@ -2,9 +2,11 @@
 
 Userspace library for RK3588 NPU via mainline Rocket driver.
 
-**⚠️ EXPERIMENTAL - NOT YET TESTED ON HARDWARE**
+**⚠️ EXPERIMENTAL - HARDWARE TESTING IN PROGRESS**
 
-This library provides a C interface to the RK3588 NPU (Neural Processing Unit) through the mainline Rocket kernel driver. It is currently in development and has not been tested on actual RK3588 hardware. Testing and contributions are welcome!
+**🔧 KERNEL PATCH REQUIRED**: The mainline Rocket driver has a critical bug. You **must** apply the kernel patch in `kernel-patches/` before using librocket. See [kernel-patches/README.md](kernel-patches/README.md) for details.
+
+This library provides a C interface to the RK3588 NPU (Neural Processing Unit) through the mainline Rocket kernel driver. Hardware testing is currently in progress on Orange Pi 5 Plus (RK3588). Contributions are welcome!
 
 ## Overview
 
@@ -14,11 +16,23 @@ librocket is a userspace library that enables access to the RK3588 NPU for accel
 
 This library is derived from [mtx512/rk3588-npu](https://github.com/mtx512/rk3588-npu) by Jasbir Matharu (mtx512), who performed the original reverse engineering of the RK3588 NPU interface. We are grateful for this foundational work.
 
+## ⚠️ Prerequisites
+
+### Kernel Patch Required
+
+The mainline Linux Rocket driver (kernel 6.18+) has a critical NULL pointer dereference bug that causes kernel crashes. You **must** apply the patch before using librocket:
+
+1. See [kernel-patches/README.md](kernel-patches/README.md) for detailed instructions
+2. Apply `kernel-patches/0001-rocket-fix-null-pointer-dereference-in-iommu-domain.patch`
+3. Rebuild and install the Rocket kernel module
+
+**Without this patch, your kernel will crash on the first NPU operation.**
+
 ## Features
 
 - **FP16 and INT8 matrix multiplication** - Support for both floating-point and integer quantized operations
-- **Direct DRM/accel interface** - Uses the mainline Rocket kernel driver without requiring custom patches
-- **No kernel modifications** - Works with standard mainline kernel 6.19+
+- **Direct DRM/accel interface** - Uses the mainline Rocket kernel driver
+- **Kernel patch provided** - Fix for mainline kernel bug included
 - **pkg-config support** - Easy integration with CMake and other build systems
 - **Silent device probing** - Non-intrusive device detection for graceful fallback
 
@@ -29,15 +43,17 @@ This library is derived from [mtx512/rk3588-npu](https://github.com/mtx512/rk358
 - ✅ GGML integration framework
 - ✅ Operation dispatch framework
 - ✅ Matmul operation validation
-- ⏳ **Hardware testing pending** - Awaiting RK3588 device access
-- ⏳ Actual NPU execution implementation
+- ✅ **Kernel bug fixed** - NULL pointer dereference patch provided
+- ✅ **Hardware testing in progress** - Orange Pi 5 Plus (RK3588)
+- ✅ **NPU job submission working** - Device detection and buffer management functional
+- ⏳ NPU execution implementation (returns zeros currently)
 - ⏳ Performance optimization
 
 ### Known Limitations
-- Not yet tested on RK3588 hardware
+- NPU execution returns zeros (register commands need implementation)
 - CPU fallback path is functional but not optimized
 - Dequantization functions are framework placeholders
-- Matmul execution is framework placeholder
+- Requires kernel patch for mainline Rocket driver
 
 ## Integration with GGML and llama.cpp
 
