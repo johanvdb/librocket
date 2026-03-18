@@ -20,24 +20,30 @@ VERSION ?= 1.0.0
 # Sources
 LIB_SRCS = src/rocket_interface.c src/npu_matmul.c
 TEST_SRCS = tests/matmul_fp16_rocket.c
+MINIMAL_TEST_SRCS = tests/minimal_npu_test.c
 
 # Objects
 LIB_OBJS = $(LIB_SRCS:.c=.o)
 TEST_OBJS = $(TEST_SRCS:.c=.o)
+MINIMAL_TEST_OBJS = $(MINIMAL_TEST_SRCS:.c=.o)
 
 # Targets
 LIB = librocket.a
 TEST = matmul_fp16_test
+MINIMAL_TEST = minimal_npu_test
 PKG_CONFIG = rocket.pc
 
 .PHONY: all clean install
 
-all: $(LIB) $(TEST) $(PKG_CONFIG)
+all: $(LIB) $(TEST) $(MINIMAL_TEST) $(PKG_CONFIG)
 
 $(LIB): $(LIB_OBJS)
 	$(AR) rcs $@ $^
 
 $(TEST): $(TEST_OBJS) $(LIB)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+$(MINIMAL_TEST): $(MINIMAL_TEST_OBJS) $(LIB)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(PKG_CONFIG): rocket.pc.in
@@ -47,7 +53,7 @@ $(PKG_CONFIG): rocket.pc.in
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(LIB_OBJS) $(TEST_OBJS) $(LIB) $(TEST) $(PKG_CONFIG)
+	rm -f $(LIB_OBJS) $(TEST_OBJS) $(MINIMAL_TEST_OBJS) $(LIB) $(TEST) $(MINIMAL_TEST) $(PKG_CONFIG)
 
 install: $(LIB) $(PKG_CONFIG)
 	install -d $(PREFIX)/lib
@@ -66,4 +72,5 @@ install: $(LIB) $(PKG_CONFIG)
 src/rocket_interface.o: include/rocket_interface.h include/rocket_accel.h
 src/npu_matmul.o: include/npu_matmul.h include/npu_hw.h include/npu_cna.h include/npu_dpu.h
 tests/matmul_fp16_rocket.o: include/rocket_interface.h include/npu_matmul.h
+tests/minimal_npu_test.o: include/rocket_interface.h include/npu_hw.h
 
