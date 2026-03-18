@@ -18,7 +18,7 @@ PREFIX ?= /usr/local
 VERSION ?= 1.0.0
 
 # Sources
-LIB_SRCS = src/rocket_interface.c src/npu_matmul.c
+LIB_SRCS = src/rocket_interface.c src/npu_matmul_mesa.c
 TEST_SRCS = tests/matmul_fp16_rocket.c
 MINIMAL_TEST_SRCS = tests/minimal_npu_test.c
 MESA_TEST_SRCS = tests/minimal_mesa_test.c
@@ -76,7 +76,7 @@ install: $(LIB) $(PKG_CONFIG)
 
 # Dependencies
 src/rocket_interface.o: include/rocket_interface.h include/rocket_accel.h
-src/npu_matmul.o: include/npu_matmul.h include/npu_hw.h include/npu_cna.h include/npu_dpu.h
+src/npu_matmul_mesa.o: include/npu_matmul.h
 tests/matmul_fp16_rocket.o: include/rocket_interface.h include/npu_matmul.h
 tests/minimal_npu_test.o: include/rocket_interface.h include/npu_hw.h
 tests/minimal_mesa_test.o: include/rocket_interface.h

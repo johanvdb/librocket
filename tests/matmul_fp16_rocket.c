@@ -120,14 +120,15 @@ int main(int argc, char **argv)
     };
 
     ret = gen_matmul_fp16(&params);
-    if (ret != 0) {
+    if (ret < 0) {
         printf("gen_matmul_fp16 failed: %d\n", ret);
         goto err_free_output;
     }
-    printf("Generated %zu register commands\n", sizeof(npu_regs) / sizeof(uint64_t));
+    int num_commands = ret;
+    printf("Generated %d register commands\n", num_commands);
 
     /* Copy commands to DMA buffer */
-    memcpy(regcmd_bo.map, npu_regs, sizeof(npu_regs));
+    memcpy(regcmd_bo.map, npu_regs, num_commands * sizeof(uint64_t));
 
     /* Generate random test data */
     srand(time(NULL));
@@ -173,8 +174,8 @@ int main(int argc, char **argv)
     struct rocket_bo *in_bos[] = { &input_bo, &weights_bo, &regcmd_bo };
     struct rocket_bo *out_bos[] = { &output_bo };
 
-    /* Calculate regcmd_count - subtract PC header/footer commands */
-    uint32_t regcmd_count = sizeof(npu_regs) / sizeof(uint64_t) - 8;
+    /* Use actual number of commands generated */
+    uint32_t regcmd_count = num_commands;
 
     ret = rocket_submit(&ctx, &regcmd_bo, regcmd_count, in_bos, 3, out_bos, 1);
     if (ret < 0) {
