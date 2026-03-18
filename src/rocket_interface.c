@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /*
  * Rocket NPU Interface - Userspace interface for Rocket DRM/accel driver
+ *
+ * Ported from mtx512/rk3588-npu (https://github.com/mtx512/rk3588-npu)
+ * Original reverse engineering by Jasbir Matharu (mtx512)
+ * Ported to mainline Rocket driver for this project
  */
 
 #include <stdio.h>
