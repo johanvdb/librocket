@@ -23,7 +23,6 @@
 int rocket_open(struct rocket_ctx *ctx)
 {
     if (!ctx) {
-        fprintf(stderr, "rocket_open: Invalid context pointer\n");
         return -EINVAL;
     }
 
@@ -35,27 +34,9 @@ int rocket_open(struct rocket_ctx *ctx)
     }
 
     if (ctx->fd < 0) {
-        int err = errno;
-
-        /* Provide helpful error messages */
-        if (err == ENOENT) {
-            fprintf(stderr, "ERROR: Rocket NPU device not found (/dev/accel/accel*)\n");
-            fprintf(stderr, "  - Is the Rocket kernel driver loaded? Try: modprobe rocket\n");
-            fprintf(stderr, "  - Is this an RK3588 system? Rocket only supports RK3588 NPU\n");
-            fprintf(stderr, "  - Is the kernel 6.19+? Rocket requires mainline kernel 6.19 or later\n");
-        } else if (err == EACCES) {
-            fprintf(stderr, "ERROR: Permission denied accessing Rocket NPU device\n");
-            fprintf(stderr, "  - Try running with sudo, or add your user to the 'video' group\n");
-        } else if (err == EBUSY) {
-            fprintf(stderr, "ERROR: Rocket NPU device is busy (already in use)\n");
-        } else {
-            fprintf(stderr, "ERROR: Failed to open Rocket NPU device: %s\n", strerror(err));
-        }
-
-        return -err;
+        return -errno;
     }
 
-    fprintf(stderr, "Rocket NPU device opened successfully (fd=%d)\n", ctx->fd);
     return 0;
 }
 
