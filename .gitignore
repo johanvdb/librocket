@@ -1,0 +1,9 @@
+*.o
+*.a
+*.so
+matmul_fp16_test
+build/
+.DS_Store
+*.swp
+*.swo
+
