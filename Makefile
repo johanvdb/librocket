@@ -13,6 +13,10 @@ AR = $(CROSS)ar
 CFLAGS = -Wall -Wextra -O2 -g -fPIC -I./include
 LDFLAGS = -lm
 
+# Installation prefix
+PREFIX ?= /usr/local
+VERSION ?= 1.0.0
+
 # Sources
 LIB_SRCS = src/rocket_interface.c src/npu_matmul.c
 TEST_SRCS = tests/matmul_fp16_rocket.c
@@ -24,10 +28,11 @@ TEST_OBJS = $(TEST_SRCS:.c=.o)
 # Targets
 LIB = librocket.a
 TEST = matmul_fp16_test
+PKG_CONFIG = rocket.pc
 
-.PHONY: all clean
+.PHONY: all clean install
 
-all: $(LIB) $(TEST)
+all: $(LIB) $(TEST) $(PKG_CONFIG)
 
 $(LIB): $(LIB_OBJS)
 	$(AR) rcs $@ $^
@@ -35,21 +40,26 @@ $(LIB): $(LIB_OBJS)
 $(TEST): $(TEST_OBJS) $(LIB)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+$(PKG_CONFIG): rocket.pc.in
+	sed -e 's|@PREFIX@|$(PREFIX)|g' -e 's|@VERSION@|$(VERSION)|g' $< > $@
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(LIB_OBJS) $(TEST_OBJS) $(LIB) $(TEST)
+	rm -f $(LIB_OBJS) $(TEST_OBJS) $(LIB) $(TEST) $(PKG_CONFIG)
 
-install: $(LIB)
-	install -d /usr/local/lib
-	install -d /usr/local/include
-	install -m 0644 $(LIB) /usr/local/lib/
-	install -m 0644 include/rocket_interface.h /usr/local/include/
-	install -m 0644 include/npu_matmul.h /usr/local/include/
-	install -m 0644 include/npu_hw.h /usr/local/include/
-	install -m 0644 include/npu_cna.h /usr/local/include/
-	install -m 0644 include/npu_dpu.h /usr/local/include/
+install: $(LIB) $(PKG_CONFIG)
+	install -d $(PREFIX)/lib
+	install -d $(PREFIX)/include
+	install -d $(PREFIX)/lib/pkgconfig
+	install -m 0644 $(LIB) $(PREFIX)/lib/
+	install -m 0644 include/rocket_interface.h $(PREFIX)/include/
+	install -m 0644 include/npu_matmul.h $(PREFIX)/include/
+	install -m 0644 include/npu_hw.h $(PREFIX)/include/
+	install -m 0644 include/npu_cna.h $(PREFIX)/include/
+	install -m 0644 include/npu_dpu.h $(PREFIX)/include/
+	install -m 0644 $(PKG_CONFIG) $(PREFIX)/lib/pkgconfig/
 	ldconfig
 
 # Dependencies

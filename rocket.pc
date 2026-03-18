@@ -1,0 +1,11 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: librocket
+Description: Userspace library for RK3588 NPU via mainline Rocket driver
+Version: 1.0.0
+Libs: -L${libdir} -lrocket
+Cflags: -I${includedir}
+
