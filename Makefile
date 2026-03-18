@@ -22,7 +22,7 @@ LIB_OBJS = $(LIB_SRCS:.c=.o)
 TEST_OBJS = $(TEST_SRCS:.c=.o)
 
 # Targets
-LIB = librocket_matmul.a
+LIB = librocket.a
 TEST = matmul_fp16_test
 
 .PHONY: all clean
@@ -40,6 +40,17 @@ $(TEST): $(TEST_OBJS) $(LIB)
 
 clean:
 	rm -f $(LIB_OBJS) $(TEST_OBJS) $(LIB) $(TEST)
+
+install: $(LIB)
+	install -d /usr/local/lib
+	install -d /usr/local/include
+	install -m 0644 $(LIB) /usr/local/lib/
+	install -m 0644 include/rocket_interface.h /usr/local/include/
+	install -m 0644 include/npu_matmul.h /usr/local/include/
+	install -m 0644 include/npu_hw.h /usr/local/include/
+	install -m 0644 include/npu_cna.h /usr/local/include/
+	install -m 0644 include/npu_dpu.h /usr/local/include/
+	ldconfig
 
 # Dependencies
 src/rocket_interface.o: include/rocket_interface.h include/rocket_accel.h
