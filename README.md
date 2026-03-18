@@ -102,9 +102,11 @@ See [TESTING.md](TESTING.md) for hardware testing procedures.
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) file for details.
+**GPL-3.0-or-later** - See [LICENSE](LICENSE) file for details.
 
-This project includes code derived from mtx512/rk3588-npu, which is licensed under GPL-3.0-or-later.
+This project is licensed under the GNU General Public License v3 or later to maintain compatibility with the original work from mtx512/rk3588-npu, which is also licensed under GPL-3.0-or-later. This ensures that all derivative works remain free and open source.
+
+The GPL is a strong copyleft license that promotes software freedom and community collaboration.
 
 ## Contributing
 
