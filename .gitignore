@@ -4,6 +4,7 @@
 matmul_fp16_test
 minimal_npu_test
 minimal_mesa_test
+test_cna_enable
 build/
 .DS_Store
 *.swp

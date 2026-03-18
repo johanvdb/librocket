@@ -22,23 +22,26 @@ LIB_SRCS = src/rocket_interface.c src/npu_matmul_mesa.c
 TEST_SRCS = tests/matmul_fp16_rocket.c
 MINIMAL_TEST_SRCS = tests/minimal_npu_test.c
 MESA_TEST_SRCS = tests/minimal_mesa_test.c
+CNA_TEST_SRCS = tests/test_cna_enable.c
 
 # Objects
 LIB_OBJS = $(LIB_SRCS:.c=.o)
 TEST_OBJS = $(TEST_SRCS:.c=.o)
 MINIMAL_TEST_OBJS = $(MINIMAL_TEST_SRCS:.c=.o)
 MESA_TEST_OBJS = $(MESA_TEST_SRCS:.c=.o)
+CNA_TEST_OBJS = $(CNA_TEST_SRCS:.c=.o)
 
 # Targets
 LIB = librocket.a
 TEST = matmul_fp16_test
 MINIMAL_TEST = minimal_npu_test
 MESA_TEST = minimal_mesa_test
+CNA_TEST = test_cna_enable
 PKG_CONFIG = rocket.pc
 
 .PHONY: all clean install
 
-all: $(LIB) $(TEST) $(MINIMAL_TEST) $(MESA_TEST) $(PKG_CONFIG)
+all: $(LIB) $(TEST) $(MINIMAL_TEST) $(MESA_TEST) $(CNA_TEST) $(PKG_CONFIG)
 
 $(LIB): $(LIB_OBJS)
 	$(AR) rcs $@ $^
@@ -52,6 +55,9 @@ $(MINIMAL_TEST): $(MINIMAL_TEST_OBJS) $(LIB)
 $(MESA_TEST): $(MESA_TEST_OBJS) $(LIB)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+$(CNA_TEST): $(CNA_TEST_OBJS) $(LIB)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
 $(PKG_CONFIG): rocket.pc.in
 	sed -e 's|@PREFIX@|$(PREFIX)|g' -e 's|@VERSION@|$(VERSION)|g' $< > $@
 
@@ -59,7 +65,7 @@ $(PKG_CONFIG): rocket.pc.in
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(LIB_OBJS) $(TEST_OBJS) $(MINIMAL_TEST_OBJS) $(MESA_TEST_OBJS) $(LIB) $(TEST) $(MINIMAL_TEST) $(MESA_TEST) $(PKG_CONFIG)
+	rm -f $(LIB_OBJS) $(TEST_OBJS) $(MINIMAL_TEST_OBJS) $(MESA_TEST_OBJS) $(CNA_TEST_OBJS) $(LIB) $(TEST) $(MINIMAL_TEST) $(MESA_TEST) $(CNA_TEST) $(PKG_CONFIG)
 
 install: $(LIB) $(PKG_CONFIG)
 	install -d $(PREFIX)/lib
