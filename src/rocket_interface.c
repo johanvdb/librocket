@@ -198,6 +198,7 @@ int rocket_submit(struct rocket_ctx *ctx,
         .in_bo_handles = (uintptr_t)in_handles,
         .out_bo_handles = (uintptr_t)out_handles,
         .task_count = 1,
+        .task_struct_size = sizeof(struct drm_rocket_task),
         .in_bo_handle_count = in_bo_count,
         .out_bo_handle_count = out_bo_count,
     };
