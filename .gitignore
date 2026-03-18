@@ -2,6 +2,8 @@
 *.a
 *.so
 matmul_fp16_test
+minimal_npu_test
+minimal_mesa_test
 build/
 .DS_Store
 *.swp
