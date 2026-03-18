@@ -28,6 +28,11 @@
 #include "npu_dpu.h"
 #include "npu_matmul.h"
 
+/* Compatibility for __fp16 on systems that don't support it */
+#ifndef __fp16
+#define __fp16 _Float16
+#endif
+
 
 /*
  * Were only using cna & core, dpu outputs to memory

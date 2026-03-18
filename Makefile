@@ -10,7 +10,7 @@ CROSS ?=
 CC = $(CROSS)gcc
 AR = $(CROSS)ar
 
-CFLAGS = -Wall -Wextra -O2 -g -I./include
+CFLAGS = -Wall -Wextra -O2 -g -fPIC -I./include
 LDFLAGS = -lm
 
 # Sources
