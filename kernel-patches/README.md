@@ -19,9 +19,11 @@ pc : rocket_iommu_domain_put+0x20/0xa8 [rocket]
 lr : rocket_job_cleanup+0x20/0x254 [rocket]
 ```
 
-**Root Cause**: The `rocket_job_cleanup()` function calls `rocket_iommu_domain_put()` without checking if `job->domain` is NULL. If IOMMU domain allocation fails, the cleanup crashes.
+**Root Cause**: The `rocket_job_cleanup()` function calls `rocket_iommu_domain_put()` without checking if `job->domain` is NULL. At line 609 of rocket_job.c, `rocket_iommu_domain_get()` is called without checking the return value. If IOMMU domain allocation fails (due to memory pressure, IOMMU issues, or other reasons), `job->domain` will be NULL, and cleanup will crash.
 
 **Fix**: Add NULL pointer check before calling `rocket_iommu_domain_put()`.
+
+**Note**: Mesa's usage pattern may avoid this crash in normal operation, but the bug is still real and can occur under adverse conditions (memory pressure, IOMMU failures, etc.). The patch provides proper defensive error handling.
 
 **Status**: 
 - ✅ Tested on RK3588 (Orange Pi 5 Plus)
